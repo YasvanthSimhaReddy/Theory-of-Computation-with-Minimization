@@ -1,0 +1,47 @@
+#include<stdio.h>
+#include<string.h>
+#include<stdbool.h>
+#define MAX_STATES 100
+#define MAX_SYMBOLS 20
+#define MAX_EPSILON_MOVES 50
+int numStates, numSymbols, numEpsilonMoves;
+bool epsilonMoves[MAX_STATES][MAX_STATES];
+bool closure[MAX_STATES][MAX_STATES];
+void epsilonClosure(int state) {
+    for (int i = 0; i < numStates; i++) {
+        if (epsilonMoves[state][i]) {
+            closure[state][i] = true;
+            epsilonClosure(i);
+        }
+    }
+}
+int main() {
+    printf("Enter the number of states in the NFA: ");
+    scanf("%d", &numStates);
+    printf("Enter the number of symbols in the alphabet: ");
+    scanf("%d", &numSymbols);
+    printf("Enter the number of e-moves: ");
+    scanf("%d", &numEpsilonMoves);
+    int from, to;
+    for (int i = 0; i < numEpsilonMoves; i++) {
+        printf("Enter the from and to states for e-move %d: ", i+1);
+        scanf("%d%d", &from, &to);
+        epsilonMoves[from][to] = true;
+    }
+    for (int i = 0; i < numStates; i++) {
+        memset(closure[i], false, sizeof closure[i]);
+        closure[i][i] = true;
+        epsilonClosure(i);
+    }
+    printf("\ne-closure for all states:\n");
+    for (int i = 0; i < numStates; i++) {
+        printf("%d: { ", i);
+        for (int j = 0; j < numStates; j++) {
+            if (closure[i][j]) {
+                printf("%d ", j);
+            }
+        }
+        printf("}\n");
+    }
+    return 0;
+}
